@@ -8,14 +8,27 @@ use Illuminate\Http\Request;
 
 class TodoController extends Controller
 {
+    private $rules = [
+        'name' => ['required', 'max:140'],
+        'description' => ['nullable'],
+        'file' => ['nullable'],
+    ];
+
+    private $search;
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $todos = Todo::orderBy('id', 'desc')->paginate(20);
+        $this->search = $request->get('search');
+
+        $todos = Todo::when($this->search, function ($query) {
+            $query->where('name', 'like', "%{$this->search}%");
+        })->orderBy('id', 'desc')->paginate(20);
+
         return view('pages.todo.index', compact('todos'));
     }
 
@@ -26,7 +39,7 @@ class TodoController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.todo.form');
     }
 
     /**
@@ -37,7 +50,13 @@ class TodoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate($this->rules);
+
+        $inputs = $request->all();
+        Todo::create($inputs);
+
+        $this->flashMessage('Salvo com sucesso');
+        return redirect()->route('tarefas.index');
     }
 
     /**
@@ -59,7 +78,8 @@ class TodoController extends Controller
      */
     public function edit($id)
     {
-        //
+        $todo = Todo::findOrFail($id);
+        return view('pages.todo.form', compact('todo'));
     }
 
     /**
@@ -71,7 +91,12 @@ class TodoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate($this->rules);
+        $todo = Todo::findOrFail($id);
+
+        $todo->update($request->all());
+        $this->flashMessage('Atualizado com sucesso');
+        return redirect()->route('tarefas.index');
     }
 
     /**
@@ -82,6 +107,22 @@ class TodoController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Todo::destroy($id);
+        $this->flashMessage('Deletado com sucesso');
+        return redirect()->route('tarefas.index');
+    }
+
+    public function checkbox(Request $request, $id)
+    {
+        Todo::where('id', $id)->update([
+            'completed' => !empty($request['completed'])
+        ]);
+        $this->flashMessage('Atualizado com sucesso');
+        return redirect()->route('tarefas.index');
+    }
+
+    protected function flashMessage($text, $name = 'status')
+    {
+        request()->session()->flash($name, $text);
     }
 }

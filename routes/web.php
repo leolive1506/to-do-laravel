@@ -23,6 +23,7 @@ Route::group(['middleware' => ['auth']], function () {
         return view('dashboard');
     })->name('dashboard');
     Route::resource('tarefas', TodoController::class);
+    Route::put('tarefas/checkbox/{id}', [TodoController::class, 'checkbox'])->name('tarefas.checkbox');
 });
 
 
