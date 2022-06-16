@@ -33,12 +33,7 @@
                         </div>
                     </form>
                     <div class="flex gap-2">
-                        <form method="POST" action="{{ route('tarefas.update', $item->id) }}" id="tarefa-delete-{{ $item->id }}">
-                            @csrf
-                            @method('PUT')
-                        </form>
-
-                        <a href="{{ route('tarefas.edit', $item->id) }}">Editar</a>
+                        <a href="{{ route('tarefas.destroy', $item->id) }}">Editar</a>
                         <form method="POST" action="{{ route('tarefas.destroy', $item->id) }}" id="tarefa-delete-{{ $item->id }}">
                             @csrf
                             @method('DELETE')
