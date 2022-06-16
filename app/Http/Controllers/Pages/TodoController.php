@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Pages;
 use App\Http\Controllers\Controller;
 use App\Models\Todo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 
 class TodoController extends Controller
 {
@@ -53,8 +55,11 @@ class TodoController extends Controller
         $request->validate($this->rules);
 
         $inputs = $request->all();
-        Todo::create($inputs);
+        if (!empty($inputs['file'])) {
+            $inputs['file'] = $inputs['file']->store('todos');
+        }
 
+        Todo::create($inputs);
         $this->flashMessage('Salvo com sucesso');
         return redirect()->route('tarefas.index');
     }
