@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Pages\ProfileController;
 use App\Http\Controllers\Pages\TodoController;
+use App\Http\Controllers\Pages\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +26,10 @@ Route::group(['middleware' => ['auth']], function () {
     })->name('dashboard');
     Route::resource('tarefas', TodoController::class);
     Route::put('tarefas/checkbox/{id}', [TodoController::class, 'checkbox'])->name('tarefas.checkbox');
+
+    Route::resource('profiles', ProfileController::class);
+    Route::resource('users', UserController::class);
+    Route::get('profile', [UserController::class, 'profileUser'])->name('profile');
 });
 
 

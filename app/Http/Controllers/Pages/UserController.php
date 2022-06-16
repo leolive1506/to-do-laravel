@@ -4,18 +4,27 @@ namespace App\Http\Controllers\Pages;
 
 use App\Domains\Storage\Service\StorageService;
 use App\Http\Controllers\Controller;
-use App\Models\Todo;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 
-class TodoController extends Controller
+class UserController extends Controller
 {
     private $rules = [
         'name' => ['required', 'max:140'],
-        'description' => ['nullable'],
-        'file' => ['nullable'],
+        'email' => ['required', 'max:140'],
+        'password' => ['nullable', 'confirmed'],
+        'photo' => ['nullable'],
+        // 'profile_id' => ['required', 'max:140'],
+        'birthday' => ['required', 'date'],
+        'gender' => ['required', 'max:1'],
     ];
 
     private $search;
+    private $redirectIndex = 'profile';
+    private $baseView = 'pages.user';
 
     /**
      * Display a listing of the resource.
@@ -26,11 +35,11 @@ class TodoController extends Controller
     {
         $this->search = $request->get('search');
 
-        $todos = Todo::when($this->search, function ($query) {
+        $users = User::when($this->search, function ($query) {
             $query->where('name', 'like', "%{$this->search}%");
         })->orderBy('id', 'desc')->paginate(20);
 
-        return view('pages.todo.index', compact('todos'));
+        return view($this->baseView . '.index', compact('users'));
     }
 
     /**
@@ -40,7 +49,7 @@ class TodoController extends Controller
      */
     public function create()
     {
-        return view('pages.todo.form');
+        return view($this->baseView . '.form');
     }
 
     /**
@@ -54,13 +63,17 @@ class TodoController extends Controller
         $request->validate($this->rules);
 
         $inputs = $request->all();
-        if (!empty($inputs['file'])) {
-            $inputs['file'] = $inputs['file']->store('todos');
+        if (!empty($inputs['photo'])) {
+            $inputs['photo'] = $inputs['photo']->store('avatar');
         }
 
-        Todo::create($inputs);
+        if (!empty($inputs['password'])) {
+            $inputs['password'] = $this->encryptPassword($inputs['password']);
+        }
+
+        User::create($inputs);
         flashMessage('Salvo com sucesso');
-        return redirectTo('tarefas.index');
+        return redirectTo($this->redirectIndex);
     }
 
     /**
@@ -82,8 +95,8 @@ class TodoController extends Controller
      */
     public function edit($id)
     {
-        $todo = Todo::findOrFail($id);
-        return view('pages.todo.form', compact('todo'));
+        $user = User::findOrFail($id);
+        return view($this->baseView . '.form', compact('user'));
     }
 
     /**
@@ -97,16 +110,22 @@ class TodoController extends Controller
     {
         $request->validate($this->rules);
         $inputs = $request->all();
-        $todo = Todo::findOrFail($id);
+        $user = User::findOrFail($id);
 
-        if (!empty($todo->file) && !empty($inputs['file'])) {
-            StorageService::deleteFileStorage($todo->file);
-            $inputs['file'] = $inputs['file']->store('todos');
+        if (!empty($user->photo) && !empty($inputs['photo'])) {
+            StorageService::deleteFileStorage($user->photo);
+            $inputs['photo'] = $inputs['photo']->store('avatar');
         }
 
-        $todo->update($inputs);
+        if (!empty($inputs['password'])) {
+            $inputs['password'] = $this->encryptPassword($inputs['password']);
+        } else {
+            unset($inputs['password']);
+        }
+
+        $user->update($inputs);
         flashMessage('Atualizado com sucesso');
-        return redirectTo('tarefas.index');
+        return redirectTo($this->redirectIndex);
     }
 
     /**
@@ -117,23 +136,24 @@ class TodoController extends Controller
      */
     public function destroy($id)
     {
-        $todo = Todo::findOrFail($id);
-        if (!empty($todo->file)) {
-            StorageService::deleteFileStorage($todo->file);
+        $user = User::findOrFail($id);
+        if (!empty($user->photo)) {
+            StorageService::deleteFileStorage($user->photo);
         }
 
-        Todo::destroy($id);
+        User::destroy($id);
         flashMessage('Deletado com sucesso');
-        return redirectTo('tarefas.index');
+        return redirectTo($this->redirectIndex);
     }
 
-    public function checkbox(Request $request, $id)
+    public function profileUser()
     {
-        Todo::where('id', $id)->update([
-            'completed' => !empty($request['completed'])
-        ]);
+        $user = Auth::user();
+        return view($this->baseView . '.form', compact('user'));
+    }
 
-        flashMessage('Atualizado com sucesso');
-        return redirectTo('tarefas.index');
+    private function encryptPassword($password)
+    {
+        return Hash::make($password);
     }
 }

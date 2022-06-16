@@ -33,10 +33,10 @@
                         </div>
                     </form>
                     @if (!empty($item->file))
-                        <img src="{{ asset($item->file) }}" alt="" class="h-12 w-12 rounded-full">
+                        <img src="{{ asset($item->file) }}" alt="" class="h-12 w-12 rounded-full object-cover">
                     @endif
                     <div class="flex gap-2">
-                        <a href="{{ route('tarefas.destroy', $item->id) }}">Editar</a>
+                        <a href="{{ route('tarefas.edit', $item->id) }}">Editar</a>
                         <form method="POST" action="{{ route('tarefas.destroy', $item->id) }}" id="tarefa-delete-{{ $item->id }}">
                             @csrf
                             @method('DELETE')
