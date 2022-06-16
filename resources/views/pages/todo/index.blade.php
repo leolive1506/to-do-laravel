@@ -7,9 +7,16 @@
     </x-slot>
 
     <x-container class="mt-4">
-        <form action="{{ route('tarefas.index') }}" class="flex items-center">
-            <x-input name="search" placeholder="Digite para buscar..." />
-            <x-button class="h-10">Buscar</x-button>
+        <form action="{{ route('tarefas.index') }}" class="flex items-center" id="form-search-todo">
+            <x-input
+                name="search" placeholder="Digite para buscar..."
+                value="{{ request()->search ?? null }}"
+                onblur="event.preventDefault(); document.querySelector('#form-search-todo').submit()"
+            />
+            <x-button
+                class="h-10"
+                onclick="event.preventDefault(); document.querySelector('#search').value = null; document.querySelector('#form-search-todo').submit()"
+            >Limpar</x-button>
         </form>
 
         <div class="mt-4">
