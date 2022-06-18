@@ -42,15 +42,15 @@
                         </form>
                         <div class="w-full flex items-center gap-5">
                             @if (!empty($item->file))
-                                <img src="{{ asset($item->file) }}" alt="" class="h-12 w-12 rounded-full object-cover">
-                                <p class="flex items-center gap-4">
-                                    <strong>Tipo: </strong>{{ $item->file_extension }}
-                                    {{-- <form action="{{ route('tarefas.dowloadFile', $item->id) }}" method="POST">
-                                        @csrf
-                                        @method ('PUT')
-                                    </form> --}}
-                                    <a href="{{ asset($item->file) }}" download="{{ $item->name }}"><x-icons.dowload /></a>
-                                </p>
+                                @if (isImage($item->file_extension))
+                                    <img src="{{ asset($item->file) }}" alt="" class="h-12 w-12 rounded-full object-cover">
+                                @else
+                                    <x-icons.document class="h-12 w-12 text-gray-600" />
+                                    @endif
+                                    <p class="flex items-center gap-4">
+                                        <strong>Tipo: </strong>{{ $item->file_extension }}
+                                        <a href="{{ asset($item->file) }}" download="{{ $item->name }}"><x-icons.dowload /></a>
+                                    </p>
                             @endif
                         </div>
                     </div>

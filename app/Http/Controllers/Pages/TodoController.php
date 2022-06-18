@@ -59,7 +59,7 @@ class TodoController extends Controller
 
         $data = $request->all();
         if (!empty($data['file'])) {
-            $data['file_extension'] = getFileExtension($data['file']);
+            $data['file_extension'] = $data['file']->extension();
             $data['file'] = $data['file']->store('todos');
         }
 
@@ -112,7 +112,7 @@ class TodoController extends Controller
 
         if (!empty($todo->file) && !empty($data['file'])) {
             StorageService::deleteFileStorage($todo->file);
-            $data['file_extension'] = getFileExtension($data['file']);
+            $data['file_extension'] = $data['file']->extension();
             $data['file'] = $data['file']->store('todos');
         }
 

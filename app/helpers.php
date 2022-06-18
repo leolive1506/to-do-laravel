@@ -13,15 +13,6 @@ if (!function_exists('flashMessage')) {
     }
 }
 
-if (!function_exists('getFileExtension')) {
-    function getFileExtension($file)
-    {
-        $orinalName = $file->getClientOriginalName();
-        [$name, $extension] = explode('.', $orinalName);
-        return $extension;
-    }
-}
-
 if (!function_exists('dateFormat')) {
     function dateFormat($date)
     {
@@ -40,7 +31,7 @@ if (!function_exists('numberFormat')) {
     }
 }
 
-if (!function_exists('getOnlyNumbers')) {
+if (!function_exists('getOnlyNumbersDecimal')) {
     function getOnlyNumbersDecimal($string)
     {
         if (empty($string)) {
@@ -50,5 +41,16 @@ if (!function_exists('getOnlyNumbers')) {
         $string = str_replace(',', '.', $string);
 
         return intval(floatval($string) * 100);
+    }
+}
+
+if (!function_exists('isImage')) {
+    function isImage($extension)
+    {
+        if (in_array($extension, ['jpg', 'png', 'jpeg'])) {
+            return true;
+        }
+
+        return false;
     }
 }
