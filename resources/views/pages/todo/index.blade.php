@@ -25,23 +25,28 @@
             @endif
             @forelse ($todos as $item)
                 <div class="flex justify-between items-center">
-                    <form action="{{ route('tarefas.checkbox', $item->id) }}" id="form_completed_{{ $item->id }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="block mt-4">
-                            <label for="completed_{{ $item->id }}" class="inline-flex items-center" onclick="document.querySelector('#form_completed_{{ $item->id }}').submit()">
-                                <input id="completed_{{ $item->id }}" type="checkbox"
-                                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    name="completed"
-                                    {{  ($item->completed === 1 ? ' checked' : '') }}
-                                >
-                                <span class="ml-2 text-sm text-gray-600">{{ $item->name }}</span>
-                            </label>
+                    <div class="flex flex-col">
+                        <form action="{{ route('tarefas.checkbox', $item->id) }}" id="form_completed_{{ $item->id }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="block mt-4">
+                                <label for="completed_{{ $item->id }}" class="inline-flex items-center" onclick="document.querySelector('#form_completed_{{ $item->id }}').submit()">
+                                    <input id="completed_{{ $item->id }}" type="checkbox"
+                                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        name="completed"
+                                        {{  ($item->completed === 1 ? ' checked' : '') }}
+                                    >
+                                    <span class="ml-2 text-sm text-gray-600">{{ $item->name }}</span>
+                                </label>
+                            </div>
+                        </form>
+                        <div class="w-full flex items-center gap-5">
+                            @if (!empty($item->file))
+                                <img src="{{ asset($item->file) }}" alt="" class="h-12 w-12 rounded-full object-cover">
+                                <p><strong>Tipo: </strong>{{ $item->file_extension }}</p>
+                            @endif
                         </div>
-                    </form>
-                    @if (!empty($item->file))
-                        <img src="{{ asset($item->file) }}" alt="" class="h-12 w-12 rounded-full object-cover">
-                    @endif
+                    </div>
                     <div class="flex gap-2">
                         <a href="{{ route('tarefas.show', $item->id) }}"><x-icons.eye /></a>
                         <a href="{{ route('tarefas.edit', $item->id) }}"><x-icons.pencil /></a>
