@@ -13,6 +13,8 @@ class TodoController extends Controller
         'name' => ['required', 'max:140'],
         'description' => ['nullable'],
         'file' => ['nullable'],
+        'remember_at' => ['nullable', 'date'],
+        'cost' => ['nullable', 'string'],
     ];
 
     private $search;
@@ -53,12 +55,17 @@ class TodoController extends Controller
     {
         $request->validate($this->rules);
 
-        $inputs = $request->all();
-        if (!empty($inputs['file'])) {
-            $inputs['file'] = $inputs['file']->store('todos');
+        $data = $request->all();
+        if (!empty($data['file'])) {
+            $data['file_extension'] = getFileExtension($data['file']);
+            $data['file'] = $data['file']->store('todos');
         }
 
-        Todo::create($inputs);
+        if (!empty($data['cost'])) {
+            $data['cost'] = getOnlyNumbersDecimal($data['cost']);
+        }
+
+        Todo::create($data);
         flashMessage('Salvo com sucesso');
         return redirectTo('tarefas.index');
     }
@@ -71,7 +78,9 @@ class TodoController extends Controller
      */
     public function show($id)
     {
-        //
+        $todo = Todo::findOrFail($id);
+
+        return view('pages.todo.show', compact('todo'));
     }
 
     /**
@@ -96,15 +105,20 @@ class TodoController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate($this->rules);
-        $inputs = $request->all();
+        $data = $request->all();
         $todo = Todo::findOrFail($id);
 
-        if (!empty($todo->file) && !empty($inputs['file'])) {
+        if (!empty($todo->file) && !empty($data['file'])) {
             StorageService::deleteFileStorage($todo->file);
-            $inputs['file'] = $inputs['file']->store('todos');
+            $data['file_extension'] = getFileExtension($data['file']);
+            $data['file'] = $data['file']->store('todos');
         }
 
-        $todo->update($inputs);
+        if (!empty($data['cost'])) {
+            $data['cost'] = getOnlyNumbersDecimal($data['cost']);
+        }
+
+        $todo->update($data);
         flashMessage('Atualizado com sucesso');
         return redirectTo('tarefas.index');
     }
@@ -129,11 +143,13 @@ class TodoController extends Controller
 
     public function checkbox(Request $request, $id)
     {
+        $redirect = 'tarefas.index';
+        // dd($request['completed']);
         Todo::where('id', $id)->update([
             'completed' => !empty($request['completed'])
         ]);
 
         flashMessage('Atualizado com sucesso');
-        return redirectTo('tarefas.index');
+        return redirectTo($redirect);
     }
 }

@@ -21,6 +21,20 @@
                 @enderror
             </div>
             <div class="mt-4">
+                <x-label for="cost" :value="__('Custo (opcional)')" />
+                <x-input-prepend name="cost" value="{{ old('cost', $todo->cost ?? null) }}" />
+                @error('cost')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            <div class="mt-4">
+                <x-label for="remember_at" :value="__('Lembrar-me em (opcional)')" />
+                <x-input type="date" name="remember_at" value="{{ old('remember_at', $todo->remember_at ?? null) }}" />
+                @error('remember_at')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            <div class="mt-4">
                 <x-label for="description" :value="__('Descrição')" />
                 <x-textarea name="description" value="{{ old('description', $todo->description ?? null) }}" />
                 @error('description')
@@ -28,19 +42,17 @@
                 @enderror
             </div>
             <div class="my-4">
-                <div class="mb-3 w-96">
-                    <x-label for="file" :value="__('Arquivo')" />
-                    <input
-                        class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                        type="file" name="file" id="file">
-                    @error('file')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+                <x-input-file name="file" />
+                @error('file')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
             <div class="mt-4">
                 <x-button>Salvar</x-button>
             </div>
         </form>
     </x-container>
+    <script>
+
+    </script>
 </x-app-layout>

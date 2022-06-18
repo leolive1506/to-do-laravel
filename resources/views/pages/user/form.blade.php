@@ -2,7 +2,9 @@
     <x-slot:header>
         <div class="flex justify-between items-center">
             <h1>{{ empty($user->id) ? 'Novo usuário' : 'Editar usuário' }}</h1>
-            {{-- <x-button-link href="{{ route('profiles.index') }}">Voltar</x-button-link> --}}
+            @if (session('status'))
+                <div class="text-green-500">{{ session('status') }}</div>
+            @endif
         </div>
     </x-slot>
 
@@ -15,16 +17,12 @@
 
             <div class="flex flex-col sm:justify-start items-center pt-6 sm:pt-0 bg-gray-100">
                 <div>
-                    <div class="flex justify-center {{ empty($user->photo) ? 'items-center' : 'items-start'}} ">
-                        @if (!empty($user->photo))
-                            <img src="{{ asset($user->photo) }}" alt="" class="h-32 w-32 rounded-full object-cover">
-                        @endif
+                    <div class="flex justify-center items-center">
+                        <img src="{{ empty($user->photo) ? asset('imgs/avatar.png') : asset($user->photo) }}" alt="" class="h-32 w-32 rounded-full object-cover" id="user-photo">
                     </div>
                     <div class="mb-3 w-96">
-                        <x-label for="photo" :value="__('Foto')" />
-                        <input
-                            class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                            type="file" name="photo" id="photo">
+                        <x-input-file name="photo" label="Foto" />
+
                         @error('photo')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -57,16 +55,10 @@
 
             <div class="mt-4">
                 <x-label for="gender" :value="__('Sexo')" />
-                <div class="flex justify-start gap-2">
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="gender" id="M" value="M" {{  ($user->gender === 'M' ? ' checked' : '') }}>
-                      <label class="form-check-label inline-block text-gray-800" for="M">Masculino</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="gender" id="F" value="F" {{  ($user->gender === 'F' ? ' checked' : '') }}>
-                      <label class="form-check-label inline-block text-gray-800" for="F">Feminino</label>
-                    </div>
-                  </div>
+                <x-container-radio>
+                    <x-input-radio name="gender" value="M" id="M" checked="{{ $user->gender === 'M' }}" label="Masculino" />
+                    <x-input-radio name="gender" value="F" id="F" checked="{{ $user->gender === 'F' }}" label="Feminino" />
+                </x-container-radio>
                 @error('gender')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -94,4 +86,16 @@
             </div>
         </form>
     </x-container>
+
+    <script>
+        const inputPhoto = document.querySelector("input#photo")
+        inputPhoto.onchange = event => {
+            const [file] = inputPhoto.files
+            if (file) {
+                const output = document.getElementById('user-photo');
+                output.src = URL.createObjectURL(file)
+            }
+        }
+
+    </script>
 </x-app-layout>
