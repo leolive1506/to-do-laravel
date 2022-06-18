@@ -12,21 +12,6 @@ window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-import VMasker from 'vanilla-masker'
-const cost = document.querySelector("#cost");
-
-if (cost) {
-    // Masking input element to money with options.
-    VMasker(cost).maskMoney();
-    // VMasker(document.querySelector("#cost")).maskMoney({
-    //     // Decimal precision -> "90"
-    //     precision: 2,
-    //     // Decimal separator -> ",90"
-    //     separator: ',',
-    //     // Number delimiter -> "12.345.678"
-    //     delimiter: '.',
-    //   });
-}
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

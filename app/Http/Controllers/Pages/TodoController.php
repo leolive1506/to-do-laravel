@@ -18,6 +18,8 @@ class TodoController extends Controller
     ];
 
     private $search;
+    private $redirectIndex = 'tarefas.index';
+    private $baseView = 'pages.todo';
 
     /**
      * Display a listing of the resource.
@@ -32,7 +34,7 @@ class TodoController extends Controller
             $query->where('name', 'like', "%{$this->search}%");
         })->orderBy('id', 'desc')->paginate(20);
 
-        return view('pages.todo.index', compact('todos'));
+        return view($this->baseView . '.index', compact('todos'));
     }
 
     /**
@@ -42,7 +44,7 @@ class TodoController extends Controller
      */
     public function create()
     {
-        return view('pages.todo.form');
+        return view($this->baseView . '.form');
     }
 
     /**
@@ -67,7 +69,7 @@ class TodoController extends Controller
 
         Todo::create($data);
         flashMessage('Salvo com sucesso');
-        return redirectTo('tarefas.index');
+        return redirectTo($this->redirectIndex);
     }
 
     /**
@@ -80,7 +82,7 @@ class TodoController extends Controller
     {
         $todo = Todo::findOrFail($id);
 
-        return view('pages.todo.show', compact('todo'));
+        return view($this->baseView . '.show', compact('todo'));
     }
 
     /**
@@ -92,7 +94,7 @@ class TodoController extends Controller
     public function edit($id)
     {
         $todo = Todo::findOrFail($id);
-        return view('pages.todo.form', compact('todo'));
+        return view($this->baseView . '.form', compact('todo'));
     }
 
     /**
@@ -120,7 +122,7 @@ class TodoController extends Controller
 
         $todo->update($data);
         flashMessage('Atualizado com sucesso');
-        return redirectTo('tarefas.index');
+        return redirectTo($this->redirectIndex);
     }
 
     /**
@@ -138,13 +140,13 @@ class TodoController extends Controller
 
         Todo::destroy($id);
         flashMessage('Deletado com sucesso');
-        return redirectTo('tarefas.index');
+        return redirectTo($this->redirectIndex);
     }
 
     public function checkbox(Request $request, $id)
     {
         $redirect = 'tarefas.index';
-        // dd($request['completed']);
+
         Todo::where('id', $id)->update([
             'completed' => !empty($request['completed'])
         ]);

@@ -21,7 +21,7 @@
                         <img src="{{ empty($user->photo) ? asset('imgs/avatar.png') : asset($user->photo) }}" alt="" class="h-32 w-32 rounded-full object-cover" id="user-photo">
                     </div>
                     <div class="mb-3 w-96">
-                        <x-input-file name="photo" label="Foto" />
+                        <x-input-file name="photo" label="Foto" value="{{ old('photo', $user->photo ?? null) }}"/>
 
                         @error('photo')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -96,6 +96,5 @@
                 output.src = URL.createObjectURL(file)
             }
         }
-
     </script>
 </x-app-layout>
