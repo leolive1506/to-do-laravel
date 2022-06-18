@@ -25,7 +25,7 @@
             @endif
             @forelse ($todos as $item)
                 <div class="flex justify-between items-center">
-                    <div class="flex flex-col">
+                    <div class="flex flex-col gap-2">
                         <form action="{{ route('tarefas.checkbox', $item->id) }}" id="form_completed_{{ $item->id }}" method="POST">
                             @csrf
                             @method('PUT')
@@ -43,7 +43,14 @@
                         <div class="w-full flex items-center gap-5">
                             @if (!empty($item->file))
                                 <img src="{{ asset($item->file) }}" alt="" class="h-12 w-12 rounded-full object-cover">
-                                <p><strong>Tipo: </strong>{{ $item->file_extension }}</p>
+                                <p class="flex items-center gap-4">
+                                    <strong>Tipo: </strong>{{ $item->file_extension }}
+                                    {{-- <form action="{{ route('tarefas.dowloadFile', $item->id) }}" method="POST">
+                                        @csrf
+                                        @method ('PUT')
+                                    </form> --}}
+                                    <a href="{{ asset($item->file) }}" download="{{ $item->name }}"><x-icons.dowload /></a>
+                                </p>
                             @endif
                         </div>
                     </div>
